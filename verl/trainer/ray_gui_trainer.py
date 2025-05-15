@@ -511,7 +511,8 @@ class RayPPOGUITrainer(RayPPOTrainer):
 
             # reward_tensor_lst.append(reward_tensor)
             for r, exp in zip(batch_reward, input_output_for_log):
-                exp[-1]['reward'] = r
+                if len(exp) > 0:
+                    exp[-1]['reward'] = r
             reward_lst.extend(batch_reward)
             sample_inputs_outputs.extend(input_output_for_log)
 
@@ -861,6 +862,22 @@ class RayPPOGUITrainer(RayPPOTrainer):
                             gamma=self.config.algorithm.gamma,
                             lam=self.config.algorithm.lam,
                         )
+
+                    # KM: Here we reorder the batch using the advantages, we basically put the negatives in the end for each chunk, which is probably safer to throw away, we do this sorting in the chunked way because we may need to throw away more data later after DP split
+                    curr_idx = [(torch.max(batch.batch["advantages"][bid]), bid) for bid in range(len(batch))]
+                    reorder_idx = []
+                    chunk_size = len(batch) // 8
+                    for _ in range(8):
+                        if _ == 7:
+                            chunk = curr_idx[_*chunk_size:]
+                        else:
+                            chunk = curr_idx[_*chunk_size:(_+1)*chunk_size]
+                        reorder_idx.extend(sorted(chunk, key=lambda x: x[0], reverse=True))
+                    print ('reorder_idx', reorder_idx)
+                    reorder_idx = torch.tensor([r[1] for r in reorder_idx])
+                    
+                    batch.reorder(reorder_idx)
+
                     # KM: Here we throw away some data to make sure that data can be evenly distributed across DP ranks
                     batch.truncate(8)
                     print ('batch after truncate', batch)
