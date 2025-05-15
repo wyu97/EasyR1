@@ -690,6 +690,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                 batch_reward = [0]*len(batch_obs)
                 batch_done = [0]*len(batch_obs)
                 print ('batch_obs', batch_obs)
+                #A batch_obs contains: [{"history": , "image": , "task": ,"image_path":,"video_path":},....]
             # generate a batch
             if any([ob is None for ob in batch_obs]):
                 print ('Screenshot error during reset, try to copy the observation from other rollouts')
@@ -708,7 +709,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                 #print ('prompts finished')
                 with _timer("gen", timing_raw):  # wg: worker group
                     gen_batch_output = self.actor_rollout_wg.generate_sequences(prompts)
-                print ('gen_batch_output', gen_batch_output)
+                #print ('gen_batch_output', gen_batch_output)
                 responses = gen_batch_output.batch['responses']
 
                 #print ('responses', responses)
@@ -718,21 +719,22 @@ class RayPPOGUITrainer(RayPPOTrainer):
                 this_gen_out = []
                 with _timer("env_step", timing_raw):
                     batch_results = self.env.step(actions)
-                    print ('batch_results', batch_results)
+                    #A batch contains: [({"history": , "image": , "task": ,"image_path":,"video_path":},reward, done or not),....]
+                    #print ('batch_results', batch_results)
                     #breakpoint()
                     for i, res in enumerate(batch_results):
                         if res is not None and res[0] is not None:
                             print ('res', res)
                             input_output_for_log[idx+i].append({'history': batch_obs[i]['history'], 'task': batch_obs[i]['task'], 'image_path': batch_obs[i]['image_path'], 'action':actions[i]})
-                            batch_obs[i] = res[0]
-                            batch_reward[i] = res[1]
-                            batch_done[i] = res[2]
+                            batch_obs[i] = res[0] #only extract the first element of the batch_results, and update the batch_obs. Replace the old batch_obs with the new one.
+                            batch_reward[i] = res[1] #update the reward
+                            batch_done[i] = res[2] #update the done or not
                             single_instance = DataProto.from_dict(gen_batch_output[i].batch.unsqueeze(0), {k: np.expand_dims(v, 0) for k, v in gen_batch_output[i].non_tensor_batch.items()}, gen_batch_output[i].meta_info)
                             single_instance.non_tensor_batch['uid'] = np.array([batch.batch['uid'][idx+i]])
                             single_instance.non_tensor_batch['traj_id'] = np.array([traj_ids[idx+i]], dtype=object)
                             single_instance.non_tensor_batch['step_id'] = np.array([_])
                             single_instance.non_tensor_batch['reward'] = np.array([res[1]])
-                            this_gen_out.append(single_instance)
+                            this_gen_out.append(single_instance) #each single_instance is a DataProto object, which contains one step of the rollout. This is a list of DataProto objects.
                         else:
                             this_gen_out.append(None)
                             if res is not None and res[0] is None:
