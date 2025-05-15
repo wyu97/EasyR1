@@ -77,25 +77,30 @@ class GUIRewardManager:
         already_print = 0
         print ('batch reward', data.non_tensor_batch['reward'], data.non_tensor_batch['reward'].shape)
         for i in range(len(data)):
+            #print("len(data)", len(data))
             data_item = data[i]  # DataProtoItem
 
             prompt_ids = data_item.batch["prompts"]
             prompt_length = prompt_ids.shape[-1]
+            #print ('prompt_length', prompt_length)
 
             #valid_prompt_length = data_item.batch["attention_mask"][:prompt_length].sum()
             #valid_prompt_ids = prompt_ids[-valid_prompt_length:]
 
             #response_ids = data_item.batch["responses"]
             valid_response_length = data_item.batch["attention_mask"][prompt_length:].sum()
+            #print ('data_item.batch["attention_mask"]', data_item.batch["attention_mask"])
+            #print ('valid_response_length', valid_response_length)
             #print ('valid response length', valid_response_length)
             #print ('reward', data_item.non_tensor_batch['reward'], data_item.non_tensor_batch['reward'].shape)
             #valid_response_ids = response_ids[:valid_response_length]
 
             score = data_item.non_tensor_batch['reward'] #torch.tensor(.item(), dtype=torch.float32)
             reward_tensor[i, valid_response_length - 1] = score
+            #print('reward_tensors.sum(-1)', reward_tensor.sum(-1))
 
             if already_print < self.num_examine:
                 already_print += 1
-                print("[score]", score)
+                #print("[score]", score)
 
         return reward_tensor

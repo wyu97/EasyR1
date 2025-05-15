@@ -374,7 +374,7 @@ class AndroidEmulator():
         self.emulator_path = os.path.expanduser(emulator_path)
         self.avd_name = avd_name
         self.save_images = save_images
-        self.image_id = str(time.time())
+        self.image_id = udid + '_' + str(time.time())
         port_number = udid.split("-")[-1]
         self.udid = udid
         cprint(colored(f"Starting the Emulator", "green"))

@@ -9,5 +9,5 @@ python3 -m verl.trainer.main \
     config=examples/grpo_example.yaml \
     worker.actor.model.model_path=${MODEL_PATH} \
     worker.rollout.enable_chunked_prefill=false \
-    trainer.experiment_name=qwen2_5_vl_7b_gui \
+    trainer.experiment_name=gui_rl_$(TZ='America/Los_Angeles' date +%m/%d/%Y\_%H%M) \
     trainer.n_gpus_per_node=8 

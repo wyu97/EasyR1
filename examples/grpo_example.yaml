@@ -6,7 +6,7 @@ data:
   image_key: images
   max_prompt_length: 6144
   max_response_length: 2048
-  rollout_batch_size: 1
+  rollout_batch_size: 4
   shuffle: true
   seed: 1
   max_pixels: 4194304
@@ -55,14 +55,14 @@ worker:
     tensor_parallel_size: 2
     limit_images: 1
     env:
-      bsize: 8
-      n: 8
+      bsize: 16
+      n: 4
       avd_name: 'AndroidWorldAvd'
       android_avd_home: '/root/android/avd'
       emulator_path: '/root/android/emulator/emulator'
       adb_path: '/root/android/platform-tools/adb'
       max_steps: 15
-      save_path: '/gy_1/share_302625455/user/yuchengshi/qwenvl_verl_test' #'/apdcephfs_gy2/share_302625455/user/kaixinma/gui_output/qwenvl_verl_test_hd'
+      save_path: '/cq_1/share_1603164/user/yuchengshi/code/images'
       image_size: [1092, 2408]
       
 
@@ -77,7 +77,7 @@ worker:
 trainer:
   total_episodes: 10
   logger: ["console", "wandb"]
-  project_name: easy_r1
+  project_name: easy_r1 #gui_r1_yucheng_shi_dev
   experiment_name: qwen2_5_7b_math
   n_gpus_per_node: 8
   nnodes: 1

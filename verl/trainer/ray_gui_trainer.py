@@ -408,7 +408,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                                         max_steps=self.config.worker.rollout.env.max_steps,
                                         run_headless=True,
                                         evaluators=evaluators,
-                                        temp_path=os.path.join(self.config.worker.rollout.env.save_path, "images"),
+                                        temp_path=os.path.join(self.config.worker.rollout.env.save_path, self.config.trainer.experiment_name),
                                         save_images=True,
                                         all_tasks=None,
                                         record=False,
@@ -724,7 +724,6 @@ class RayPPOGUITrainer(RayPPOTrainer):
                     #breakpoint()
                     for i, res in enumerate(batch_results):
                         if res is not None and res[0] is not None:
-                            print ('res', res)
                             input_output_for_log[idx+i].append({'history': batch_obs[i]['history'], 'task': batch_obs[i]['task'], 'image_path': batch_obs[i]['image_path'], 'action':actions[i]})
                             batch_obs[i] = res[0] #only extract the first element of the batch_results, and update the batch_obs. Replace the old batch_obs with the new one.
                             batch_reward[i] = res[1] #update the reward
@@ -741,7 +740,8 @@ class RayPPOGUITrainer(RayPPOTrainer):
                                 # env failure
                                 batch_done[i] = 1
                 #print ('all gen batch output', len(all_gen_batch_out), all_gen_batch_out)
-                all_gen_batch_out.append(this_gen_out)  
+                all_gen_batch_out.append(this_gen_out)
+                #contain all the steps of the rollout, and all the trajectories, contain uid, traj_id, step_id, reward, done
                 print ('after step', batch_reward, batch_done)
                 #breakpoint()
                 if all(batch_done):
@@ -831,7 +831,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                     real_batch = []
                     for step in all_gen_batch_out:
                         step = [s for s in step if s is not None]
-                        print ('step', step)
+                        # include i-th step from all the trajectories
                         if len(step) > 0:
                             real_batch.append(DataProto.concat(step))
                     batch = DataProto.concat(real_batch)
@@ -912,6 +912,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                         metrics.update(actor_output_metrics)
 
                     # validate
+                    print ('val_reward_fn', self.val_reward_fn, "self.config.trainer.val_freq", self.config.trainer.val_freq, "self.global_steps", self.global_steps)
                     if (
                         self.val_reward_fn is not None
                         and self.config.trainer.val_freq > 0

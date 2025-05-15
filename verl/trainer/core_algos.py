@@ -197,21 +197,24 @@ def compute_grpo_traj_outcome_advantage(
     traj_id2score = defaultdict(list)
     traj2id = {}
     id2mean, id2std = {}, {}
-    # print('scores', scores)
-    # print ('index', index)
-    # print ('traj_index', traj_index)
+    print('scores', scores)
+    print ('index', index)
+    print ('traj_index', traj_index)
 
     bsz = scores.shape[0]
     for i in range(bsz):
         traj_id2score[traj_index[i]].append(scores[i].item())
         traj2id[traj_index[i]] = index[i]
+        print ('traj_id2score[traj_index[i]]', traj_id2score[traj_index[i]])
+        print ('traj2id[traj_index[i]]', traj2id[traj_index[i]])
 
     for k, v in traj_id2score.items():
+        #print ('k', k, 'v', v)
+        #print ('traj2id[k]', traj2id[k])
         id2score[traj2id[k]].append(max(v))
-
     
-    # print ('traj2id', traj2id)
-    # print ('id2score', id2score )
+    print ('traj2id', traj2id)
+    print ('id2score', id2score )
 
     for idx in id2score:
         if len(id2score[idx]) == 1:
@@ -222,16 +225,16 @@ def compute_grpo_traj_outcome_advantage(
             id2std[idx] = torch.std(torch.tensor([id2score[idx]]))
         else:
             raise ValueError(f"no score in prompt index: {idx}")
-    print ('id2mean', id2mean)
-    print ('id2std', id2std)
+    #print ('id2mean', id2mean)
+    #print ('id2std', id2std)
     #breakpoint()
     
     for i in range(bsz):
         scores[i] = (max(traj_id2score[traj_index[i]]) - id2mean[index[i]]) / (id2std[index[i]] + epsilon)
-    #print ('traj_id2score', traj_id2score)
+    print ('traj_id2score', traj_id2score)
     #print (i, traj_index[i], traj_id2score[traj_index[i]], max(traj_id2score[traj_index[i]]), id2mean[index[i]], (id2std[index[i]] + epsilon))
     #print (scores[-1])
-    print('scores', scores)
+    #print('scores', scores)
     #breakpoint()
     scores = scores.unsqueeze(-1).tile([1, response_length]) * eos_mask
     return scores, scores
