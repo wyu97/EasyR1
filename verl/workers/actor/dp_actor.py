@@ -231,7 +231,7 @@ class DataParallelPPOActor(BasePPOActor):
 
         # Split to make minibatch iterator for updating the actor
         # See PPO paper for details. https://arxiv.org/abs/1707.06347
-        print ('in update policy', len(data), self.config.global_batch_size_per_device )
+        print ('in update policy', len(data), self.config.global_batch_size_per_device)
         # KM: here again we throw away some data since the ppo_epochs is set to 1, the last few samples are not used anyway
         # KM: we need to be mindful that the data for a DP rank may be less than the global_batch_size_per_device
         if len(data) > self.config.global_batch_size_per_device:
@@ -254,7 +254,10 @@ class DataParallelPPOActor(BasePPOActor):
                     response_length = responses.size(1)
                     attention_mask = model_inputs["attention_mask"]
                     response_mask = attention_mask[:, -response_length:]
-                    old_log_prob = model_inputs["old_log_probs"]
+                    if "old_log_probs" in model_inputs:
+                        old_log_prob = model_inputs["old_log_probs"]
+                    else:
+                        old_log_prob = None
                     advantages = model_inputs["advantages"]
 
                     clip_ratio = self.config.clip_ratio
