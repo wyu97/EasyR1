@@ -12,7 +12,7 @@ from appium import webdriver
 from appium.options.android import UiAutomator2Options
 
 import base64
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from termcolor import colored, cprint
 import concurrent.futures
@@ -381,7 +381,7 @@ class AndroidEmulator():
         command = f"""{self.emulator_path} -avd {self.avd_name} "-no-audio" "-skip-adb-auth" "-no-boot-anim" "-gpu" "auto" "-no-snapshot-save" -port {port_number} -http-proxy http://9.21.0.122:11113 -dns-server 8.8.8.8 -memory 3072 -cores 2 -verbose"""
         if no_window:
             command += " -no-window"
-        log_file = f"emulator_{port_number}_log.txt"
+        log_file = f"emulator_log/emulator_{port_number}_log.txt"
         print(f"executing command {command}")
         #self.emulator_process = subprocess.Popen(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.emulator_process = subprocess.Popen(command, shell=True, stdout=open(log_file, "w"), stderr=subprocess.STDOUT)
@@ -545,6 +545,96 @@ adb -s {self.udid} shell screenrecord --size 540x1140 --bit-rate 4M --time-limit
                     return None
                 failed += 1
                 continue
+    def get_obs_with_action(self, action=None, screenshot=None, task=None):
+        """Get observation with action visualization on the screenshot.
+        Args:
+            action: AndroidAction object containing the action information
+            screenshot: The current screenshot observation
+        Returns:
+            Same as get_obs() but with an additional image_path_annotated field
+        """
+        if action is None or screenshot is None:
+            return None
+        
+        # Create a copy of the image for annotation
+        if self.steps > 0:
+            previous_image_path = os.path.join(self.temp_path, f"{self.image_id}_{self.steps-1}.png")
+            image = Image.open(previous_image_path)
+            draw = ImageDraw.Draw(image)
+        else: 
+            return None
+        
+        try:
+            # Try to use DejaVuSans which is commonly available on Linux systems
+            font = ImageFont.truetype("DejaVuSans.ttf", 36)
+        except IOError:
+            try:
+                # Try to use a system font
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
+            except IOError:
+                # Fall back to default font
+                font = ImageFont.load_default()
+
+        if self.steps==1:
+            if task is not None:
+                font = ImageFont.load_default()
+                # Draw the task text at the top-left corner
+                draw.text((10, 10), f"Task: {task}", fill='red', font=font)
+            annotated_path = os.path.join(self.temp_path, f"{self.image_id}_{self.steps-1}_annotated.png")
+            image.save(annotated_path)
+        
+        # Add action visualization based on action type
+        if action.action_type == ActionType.DualPoint:
+            # Draw touch and lift points
+            touch_x = int(action.touch_point[0] * self.screen_size[0])
+            touch_y = int(action.touch_point[1] * self.screen_size[1])
+            lift_x = int(action.lift_point[0] * self.screen_size[0])
+            lift_y = int(action.lift_point[1] * self.screen_size[1])
+            
+            # Draw red dot for touch point
+            draw.ellipse([touch_x-10, touch_y-10, touch_x+10, touch_y+10], fill='red')
+            
+            # If it's a swipe, draw the path
+            if (touch_x - lift_x)**2 + (touch_y - lift_y)**2 > 10:
+                draw.line([touch_x, touch_y, lift_x, lift_y], fill='red', width=3)
+                draw.ellipse([lift_x-10, lift_y-10, lift_x+10, lift_y+10], fill='blue')
+                
+        elif action.action_type == ActionType.Type:
+            # Add text annotation for typing action
+            draw.text((10, 10), f"Typed: {action.typed_text}", fill='red', font=font)
+            
+        elif action.action_type in [ActionType.GoBack, ActionType.GoHome, ActionType.Enter, ActionType.Menu]:
+            # Add text annotation for system button actions
+            draw.text((10, 10), f"Action: {action.action_type.name}", fill='red', font=font)
+            
+        elif action.action_type == ActionType.Wait:
+            # Add text annotation for wait action
+            draw.text((10, 10), f"Wait: {action.time}s", fill='red', font=font)
+        
+        elif action.action_type == ActionType.Enter:
+            draw.text((10, 10), f"Enter", fill='red', font=font)
+        elif action.action_type == ActionType.TaskComplete:
+            # Add text annotation for task complete action
+            draw.text((10, 10), f"Action: {action.action_type.name}", fill='red', font=font)
+
+        elif action.action_type == ActionType.TaskImpossible:
+            # Add text annotation for task impossible action
+            draw.text((10, 10), f"Action: {action.action_type.name}", fill='red', font=font)
+
+        elif action.action_type == ActionType.Idle:
+            # Add text annotation for idle action
+            draw.text((10, 10), f"Action: {action.action_type.name}", fill='red', font=font)
+        else:
+            pass
+            
+        # Save the annotated image
+        annotated_path = os.path.join(self.temp_path, f"{self.image_id}_{self.steps}_annotated.png")
+        image.save(annotated_path)
+        
+        # Add the annotated image path to the observation
+        screenshot["image_path_annotated"] = annotated_path
+        return screenshot
+
     def step(self, raw_action: str, skip_record=False):
         if self.terminated:
             return None
@@ -609,12 +699,14 @@ adb -s {self.udid} shell screenrecord --size 540x1140 --bit-rate 4M --time-limit
                 else:
                     raise Exception(f"Unknown action type: {action.action_type}")
                 action_success = True
+                # Get both regular and annotated screenshots
                 screenshot = self.get_obs()
+                screenshot_with_action = self.get_obs_with_action(action, screenshot, self.current_task)
+                
                 break
             except Exception as e:
-                cprint(colored("an Exception occurred during environment interaction", "red"))
-                print(e)
-                cprint(colored("Retrying", "red"))
+                print("an Exception occurred during environment interaction: ", e)
+                print("Retrying")
                 sleep(10)
                 if i == 1:
                     action_success = False
@@ -735,6 +827,7 @@ class BatchedAndroidEnv():
         self.appium_processes = []
         for i in range(self.base_port, self.base_port+self.bsize):
             self.appium_processes.append(subprocess.Popen(f"appium --relaxed-security -p {i} > /dev/null", stdout=subprocess.DEVNULL, shell=True))
+            print(f"starting appium server at port {i}")
         # sleep(10)
         self.appium_server_urls = [f"http://localhost:{i}" for i in range(self.base_port, self.base_port+self.bsize)]
 

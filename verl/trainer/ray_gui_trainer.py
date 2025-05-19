@@ -390,11 +390,15 @@ class RayPPOGUITrainer(RayPPOTrainer):
         else:
             self.use_critic = False
 
-        self.all_tasks = load_task_file('/cq/share_1603164/user/kaixinma/digirl/digirl/environment/android/assets/task_set/', 'general', 'train')
+        #self.all_tasks = load_task_file('/cq/share_1603164/user/kaixinma/digirl/digirl/environment/android/assets/task_set/', 'general', 'train')
         self.test_tasks = load_task_file('/cq/share_1603164/user/kaixinma/digirl/digirl/environment/android/assets/task_set/', 'general', 'test')
+        self.all_tasks = load_task_file('/cq_1/share_1603164/user/yuchengshi/code/EasyR1/data/', 'small', 'train')
+        #self.test_tasks = load_task_file('/cq_1/share_1603164/user/yuchengshi/code/images/task_set/', 'general', 'test')
         self._create_dataloader()
 
-        base_port = 5556
+        print(f"Number of tasks loaded: {len(self.all_tasks)}")
+
+        base_port = 1024#5556
         all_avd_names = [f"test{i}" for i in range(1,self.config.worker.rollout.env.bsize+1)]
         all_udids = [f"emulator-{base_port+2*i}" for i in range(self.config.worker.rollout.env.bsize)]
         evaluators = [Qwen25VLEvaluator() for _ in range(self.config.worker.rollout.env.bsize)]
@@ -416,7 +420,8 @@ class RayPPOGUITrainer(RayPPOTrainer):
                                         )
 
     def _create_dataloader(self):
-        total_train_samples = self.config.trainer.max_steps * self.config.data.rollout_batch_size
+        #total_train_samples = self.config.trainer.max_steps * self.config.data.rollout_batch_size
+        total_train_samples = len(self.all_tasks) - len(self.all_tasks) % self.config.data.rollout_batch_size
         total_val_samples = self.config.trainer.val_steps * self.config.data.rollout_batch_size * self.config.worker.rollout.env.n
         train_sample_ids = list(range(total_train_samples))
         val_sample_ids = list(range(total_val_samples))
@@ -425,9 +430,12 @@ class RayPPOGUITrainer(RayPPOTrainer):
             random.shuffle(train_sample_ids)
         self.train_dataloader = [train_sample_ids[i : i + self.config.data.rollout_batch_size] for i in range(0, total_train_samples, self.config.data.rollout_batch_size)]
         self.val_dataloader = [val_sample_ids[i : i + self.config.data.rollout_batch_size * self.config.worker.rollout.env.n] for i in range(0, total_val_samples, self.config.data.rollout_batch_size * self.config.worker.rollout.env.n)]
-        self.training_steps = self.config.trainer.max_steps
-        self.config.worker.actor.optim.training_steps = self.config.trainer.max_steps
-        self.config.worker.critic.optim.training_steps = self.config.trainer.max_steps
+        #self.training_steps = self.config.trainer.max_steps
+        self.training_steps = total_train_samples // self.config.data.rollout_batch_size
+        #self.config.worker.actor.optim.training_steps = self.config.trainer.max_steps
+        #self.config.worker.critic.optim.training_steps = self.config.trainer.max_steps
+        self.config.worker.actor.optim.training_steps = self.training_steps
+        self.config.worker.critic.optim.training_steps = self.training_steps
         print(f"Total training steps: {self.training_steps}")
 
     def _maybe_log_val_generations(self, inputs, outputs, scores):
@@ -781,6 +789,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                 self.global_steps += 1
                 # if self.global_steps >= self.training_steps:
                 #     break
+                print ('batch', batch)
                 batch_tasks = [self.all_tasks[b] for b in batch]
                 batch_dict = {'uid': torch.Tensor(batch), 'tasks': np.array(batch_tasks, dtype=object)}
                 print ('task batch', batch)
@@ -828,7 +837,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                     # repeat to align with repeated responses in rollout
                     # 
                     # batch = batch.union(gen_batch_output)
-                    print ('all gen batch out_fit', all_gen_batch_out)
+                    #print ('all gen batch out_fit', all_gen_batch_out)
                     real_batch = []
                     for step in all_gen_batch_out:
                         step = [s for s in step if s is not None]
@@ -836,7 +845,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
                         if len(step) > 0:
                             real_batch.append(DataProto.concat(step))
                     batch = DataProto.concat(real_batch)
-                    print ('batch after concat', batch)
+                    #print ('batch after concat', batch)
                     with _timer("adv", timing_raw):
                         # compute scores. Support both model and function-based.
                         # We first compute the scores using reward model. Then, we call reward_fn to combine
@@ -882,7 +891,7 @@ class RayPPOGUITrainer(RayPPOTrainer):
 
                     # KM: Here we throw away some data to make sure that data can be evenly distributed across DP ranks
                     batch.truncate(8)
-                    print ('batch after truncate', batch)
+                    #print ('batch after truncate', batch)
                     for k, v in batch.non_tensor_batch.items():
                         print (k, v.shape)
                     #print ('after rollout', batch, len(batch))

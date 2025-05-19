@@ -205,8 +205,8 @@ def compute_grpo_traj_outcome_advantage(
     for i in range(bsz):
         traj_id2score[traj_index[i]].append(scores[i].item())
         traj2id[traj_index[i]] = index[i]
-        print ('traj_id2score[traj_index[i]]', traj_id2score[traj_index[i]])
-        print ('traj2id[traj_index[i]]', traj2id[traj_index[i]])
+        # print ('traj_id2score[traj_index[i]]', traj_id2score[traj_index[i]])
+        # print ('traj2id[traj_index[i]]', traj2id[traj_index[i]])
 
     for k, v in traj_id2score.items():
         #print ('k', k, 'v', v)

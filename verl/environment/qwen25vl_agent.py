@@ -33,6 +33,10 @@ For each function call, return a json object with function name and arguments wi
 
 SYSTEM_PROMPT_COT = """You are a helpful assistant.
 
+# Google Account
+Email: tencent.test.bot@gmail.com
+Password: tencenttestbot123!
+
 # Tools
 
 You may call one or more functions to assist with the user query.
