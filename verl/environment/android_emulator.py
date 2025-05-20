@@ -545,7 +545,7 @@ adb -s {self.udid} shell screenrecord --size 540x1140 --bit-rate 4M --time-limit
                     return None
                 failed += 1
                 continue
-    def get_obs_with_action(self, action=None, screenshot=None, task=None):
+    def get_obs_with_action(self, action=None, screenshot=None, task=None, history=None):
         """Get observation with action visualization on the screenshot.
         Args:
             action: AndroidAction object containing the action information
@@ -627,6 +627,9 @@ adb -s {self.udid} shell screenrecord --size 540x1140 --bit-rate 4M --time-limit
         else:
             pass
             
+        # Draw history of actions at the bottom of the image
+        history_text = "History: " + " -> ".join(history[-2:])  # Show last 2 actions
+        draw.text((10, self.screen_size[1]/2), history_text, fill='red')
         # Save the annotated image
         annotated_path = os.path.join(self.temp_path, f"{self.image_id}_{self.steps}_annotated.png")
         image.save(annotated_path)
@@ -701,7 +704,7 @@ adb -s {self.udid} shell screenrecord --size 540x1140 --bit-rate 4M --time-limit
                 action_success = True
                 # Get both regular and annotated screenshots
                 screenshot = self.get_obs()
-                screenshot_with_action = self.get_obs_with_action(action, screenshot, self.current_task)
+                screenshot_with_action = self.get_obs_with_action(action, screenshot, self.current_task, self.history)
                 
                 break
             except Exception as e:

@@ -198,8 +198,8 @@ def compute_grpo_traj_outcome_advantage(
     traj2id = {}
     id2mean, id2std = {}, {}
     print('scores', scores)
-    print ('index', index)
-    print ('traj_index', traj_index)
+    #print ('index', index)
+    #print ('traj_index', traj_index)
 
     bsz = scores.shape[0]
     for i in range(bsz):

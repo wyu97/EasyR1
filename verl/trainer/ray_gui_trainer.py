@@ -331,7 +331,8 @@ def _timer(name: str, timing_raw: Dict[str, float]):
 
     timing_raw[name] = timer.last
 
-def load_task_file(assets_path, task_set, task_split):
+def load_task_file(assets_path, task_file):
+    task_set, task_split = task_file.split('@')
     all_tasks = []
     with open(os.path.join(assets_path, task_set + "_" + task_split + ".txt")) as fb: 
         for line in fb:
@@ -391,9 +392,10 @@ class RayPPOGUITrainer(RayPPOTrainer):
             self.use_critic = False
 
         #self.all_tasks = load_task_file('/cq/share_1603164/user/kaixinma/digirl/digirl/environment/android/assets/task_set/', 'general', 'train')
-        self.test_tasks = load_task_file('/cq/share_1603164/user/kaixinma/digirl/digirl/environment/android/assets/task_set/', 'general', 'test')
-        self.all_tasks = load_task_file('/cq_1/share_1603164/user/yuchengshi/code/EasyR1/data/', 'small', 'train')
-        #self.test_tasks = load_task_file('/cq_1/share_1603164/user/yuchengshi/code/images/task_set/', 'general', 'test')
+        #self.test_tasks = load_task_file('/cq/share_1603164/user/kaixinma/digirl/digirl/environment/android/assets/task_set/', 'general', 'test')
+
+        self.all_tasks = load_task_file(self.config.data.dataset_path, self.config.data.train_files)
+        self.test_tasks = load_task_file(self.config.data.dataset_path, self.config.data.val_files)
         self._create_dataloader()
 
         print(f"Number of tasks loaded: {len(self.all_tasks)}")

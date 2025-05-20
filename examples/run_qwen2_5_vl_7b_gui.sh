@@ -10,4 +10,5 @@ python3 -m verl.trainer.main \
     worker.actor.model.model_path=${MODEL_PATH} \
     worker.rollout.enable_chunked_prefill=false \
     trainer.experiment_name=gui_rl_7b_$(TZ='America/Los_Angeles' date +%m_%d_%Y_%H%M) \
-    trainer.n_gpus_per_node=8 
+    trainer.n_gpus_per_node=8 \
+    trainer.save_checkpoint_path=/gy_1/share_302625455/user/yuchengshi/qwenvl_verl_7b_$(TZ='America/Los_Angeles' date +%m_%d_%Y_%H%M)

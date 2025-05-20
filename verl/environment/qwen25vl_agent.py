@@ -125,7 +125,7 @@ class Qwen25VLAgent(torch.nn.Module):
         batch_messages = [self.construct_prompt(ob) for ob in observation]
         #with torch.no_grad():
         batch_text = self.processor.apply_chat_template(batch_messages, tokenize=False, add_generation_prompt=True)
-        print ('batch_text.shape', len(batch_text))
+        #print ('batch_text.shape', len(batch_text))
         #print (batch_text[0])
         # image_inputs, video_inputs = process_vision_info(batch_messages)
         # inputs = self.processor(

@@ -33,6 +33,7 @@ def recursive_post_init(dataclass_obj):
 
 @dataclass
 class DataConfig:
+    dataset_path: str = ""
     train_files: str = ""
     val_files: str = ""
     prompt_key: str = "prompt"

@@ -6,7 +6,7 @@ data:
   image_key: images
   max_prompt_length: 6144
   max_response_length: 2048
-  rollout_batch_size: 4
+  rollout_batch_size: 2
   shuffle: true
   seed: 1
   max_pixels: 4194304
@@ -37,7 +37,6 @@ worker:
       lr: 1.0e-6
       weight_decay: 1.0e-2
       lr_warmup_ratio: 0.0
-
     fsdp:
       enable_full_shard: true
       enable_cpu_offload: false
@@ -57,7 +56,7 @@ worker:
     limit_images: 1
     env:
       bsize: 16
-      n: 4
+      n: 8
       avd_name: 'AndroidWorldAvd'
       android_avd_home: '/root/android/avd'
       emulator_path: '/root/android/emulator/emulator'
