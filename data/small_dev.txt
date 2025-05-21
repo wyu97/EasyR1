@@ -1,0 +1,50 @@
+In Simple Calendar Pro, create a 60-minute event for this Thursday at 05:00 named “Call with the Team,” with the note “We will celebrate team roles.”
+Open Audio Recorder, record a new note verbally for “Shopping List,” then stop and save it.
+Open Markor, create a new markdown file named “tasks_today.md” with “- [ ] Finish reading book”.
+Open Camera, enable HDR, then take a photo named “hdr_example.jpg.”
+Enable Bluetooth on the device.
+Open Draw, draw a yellow star on a light-blue background, saving as “star_art.png.”
+Open Clipper, edit the snippet “Address” to append “Apartment 4B.”
+Open Markor, create a new plain text file named “inspiration.txt” with the line “Stay motivated!”
+Open Phone, add a speed dial for “+12345678” labeled “Test Speed Dial.”
+Open YouTube, search for “Productivity tips for Android,” watch the first video for 15 seconds, then pause.
+Open Clock and set a new alarm for 7:15 AM tomorrow.
+Open Miniwob, go to Settings, enable “Sound Effects,” then return to main menu.
+Open Markor, create a markdown file “weekly_goals.md” with content “# Goals for the week.”
+Open Calendar, create a 15-minute event named “Coffee Break” for next Monday at 15:15.
+Open AndroidWorld, switch the app theme to dark mode if available.
+Open Chrome, open a new tab, type “best pizza recipes,” and search.
+Open Camera, switch to selfie mode, take a photo named “selfie_smile.jpg.”
+Open Simple SMS Messenger and send whatever is on the clipboard to +15459061746.
+Open Draw, scribble with the brush tool for 10 seconds, then save as “abstract_scribble.png.”
+Raise the brightness again to max if it hasn’t changed.
+Open Google Drive, create a folder named “2026_Plans.”
+Open the Clock app, start the stopwatch, let it run for 10 seconds, then pause it.
+Open SMS Messenger, start a new text to “+444555666” saying “Quick question: Are you free?” but do not send.
+Open Messages, create a draft message for “+987654321” with “Meeting at 10 AM tomorrow.”
+Open Messages and type “Lunch at noon?” but do not send.
+Open Messages, compose a new SMS to +123450000 with the text “Hello, this is a test message.”
+Launch the Calculator app, compute 15 × 7, and save the result in a text file named "calc_result.txt" in the Documents folder.
+Open OpenTracks, create a new route by manually adding a waypoint labeled “Start” and another labeled “Finish.”
+Open OsmAnd, enable the “Contour lines” overlay in Map settings.
+Open TMobile, go to “Support,” and search “Billing questions.”
+In the Weather app, add a new location "San Francisco, CA" and refresh the forecast.
+Open Files, create a folder named “Music_Backup” in internal storage.
+Open Photos, switch to the “Library” tab, create an album named “ArtShots.”
+In “Travel Plans,” create a note “Packing List” with “- Passport\n- Clothes\n- Charger.”
+Open YT Music, go to Library, create a playlist named “Morning Drive” with no songs yet.
+Open Messages and start a new conversation with +987650000 saying “Checking in on you!”
+In Broccoli, also add the Chicken Caesar Salad Wrap recipe (3-4 servings, 2 hrs prep, ingredients “as desired”).
+Open Phone, dial “123,” then press the back button without calling.
+Open Camera, enable flash and take a new photo named “flash_test.jpg.”
+Open Phone, go to Call settings, and enable “Caller ID display” if disabled.
+Open Markor, create a new note named “ideas_2025.md” with the text “# Big Ideas for 2025”.
+Open the Miniwob App, start a new game, and complete the first level.
+Open Gallery, go to Settings, and set the default view to “Albums.”
+Open Google, tap the microphone icon, and say “Open Calculator.”
+In the File Manager app, create a new folder named "Project_Notes_2025".
+Open Tasks, create a new task “Pick up groceries” due tomorrow at 6 PM.
+Open the Phone app, type in 1234, then clear it without calling.
+Open Gallery, create a new album named “Vacation2026.”
+Open VLC, go to Settings, and enable “Background playback.”
+Open Retro Music, play the first track you see for 10 seconds, then pause it.
