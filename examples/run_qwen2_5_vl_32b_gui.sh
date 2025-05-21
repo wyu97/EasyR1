@@ -11,4 +11,6 @@ python3 -m verl.trainer.main \
     worker.rollout.enable_chunked_prefill=false \
     trainer.experiment_name=gui_rl_32b_$(TZ='America/Los_Angeles' date +%m_%d_%Y_%H%M) \
     trainer.n_gpus_per_node=8 \
+    worker.actor.fsdp.torch_dtype=bf16 \
+    worker.actor.optim.strategy=adamw_bf16 \
     trainer.save_checkpoint_path=/gy_1/share_302625455/user/yuchengshi/qwenvl_verl_32b_$(TZ='America/Los_Angeles' date +%m_%d_%Y_%H%M)

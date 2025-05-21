@@ -528,7 +528,8 @@ class RayPPOGUITrainer(RayPPOTrainer):
 
         #self._maybe_log_val_generations(inputs=sample_inputs, outputs=sample_outputs, scores=sample_scores)
         #reward_score = torch.cat(reward_tensor_lst, dim=0).sum(-1).mean().item()
-        output_path = os.path.join(self.config.worker.rollout.env.save_path, f"step_{self.global_steps}_val_results.json")
+        temp_val_path = os.path.join(self.config.worker.rollout.env.save_path, self.config.trainer.experiment_name)
+        output_path = os.path.join(temp_val_path, f"step_{self.global_steps}_val_results.json")
         with open(output_path, 'w') as fout:
             json.dump(sample_inputs_outputs, fout, indent=4)
         reward_score = sum(reward_lst) / len(reward_lst)

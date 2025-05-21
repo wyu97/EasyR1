@@ -1,7 +1,7 @@
 data:
   dataset_path: /cq_1/share_1603164/user/yuchengshi/code/EasyR1/data/
   train_files: small@train
-  val_files: small@test
+  val_files: small@train
   prompt_key: problem
   answer_key: answer
   image_key: images
@@ -53,7 +53,7 @@ worker:
     gpu_memory_utilization: 0.5
     enforce_eager: false
     enable_chunked_prefill: false
-    tensor_parallel_size: 2
+    tensor_parallel_size: 1
     limit_images: 1
     env:
       bsize: 32
@@ -62,7 +62,7 @@ worker:
       android_avd_home: '/root/android/avd'
       emulator_path: '/root/android/emulator/emulator'
       adb_path: '/root/android/platform-tools/adb'
-      max_steps: 15
+      max_steps: 25
       save_path: '/cq_1/share_1603164/user/yuchengshi/code/images'
       image_size: [1092, 2408]
       
@@ -86,7 +86,7 @@ trainer:
   val_before_train: false
   val_only: false
   val_generations_to_log: 1
-  save_freq: 50
+  save_freq: 10
   remove_previous_ckpt: false
   remove_ckpt_after_load: false
   save_checkpoint_path: '/gy_1/share_302625455/user/yuchengshi/qwenvl_verl_test' #/apdcephfs_gy2/share_302625455/user/kaixinma/gui_output/qwenvl_verl_test_hd

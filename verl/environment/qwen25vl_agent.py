@@ -117,8 +117,14 @@ class Qwen25VLAgent(torch.nn.Module):
                 messages[-1]['content'].append({'type': 'text', 'text': f"Step {i+1}: {conclusion_part};\n"})
         messages[-1]['content'].append({'type': 'text', 'text': "Before answering, explain your reasoning step-by-step in <thinking></thinking> tags, and insert them before the <tool_call></tool_call> XML tags.\nAfter answering, summarize your action in <conclusion></conclusion> tags, and insert them after the <tool_call></tool_call> XML tags."})
         #print (messages)
+        #         messages[-1]['content'].append({'type': 'text', 'text': '''Before answering, please:
+        # 1. Carefully review the task history and current state
+        # 2. Think step-by-step about what needs to be done next
+        # 3. Verify if your planned action aligns with the original task requirements
+        # 4. Explain your reasoning in <thinking></thinking> tags
+        # 5. Then provide your action in <tool_call></tool_call> tags
+        # 6. Finally, summarize your action and outline the next steps in <conclusion></conclusion> tags.\n\n'''})
         messages[-1]['content'].append({'type': 'image', 'image': process_image(observation['image'], 4194304, 262144)})
-        #messages[-1]['content'].append({'type': 'image', 'image': process_image(observation['image'], 4194304, 262144)})
         return messages
 
     def get_action_inputs(self, observation):

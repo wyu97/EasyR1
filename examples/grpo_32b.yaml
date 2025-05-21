@@ -1,6 +1,7 @@
 data:
-  train_files: hiyouga/math12k@train
-  val_files: hiyouga/math12k@test
+  dataset_path: /cq_1/share_1603164/user/yuchengshi/code/EasyR1/data/
+  train_files: small@train
+  val_files: small@train
   prompt_key: problem
   answer_key: answer
   image_key: images
@@ -44,7 +45,7 @@ worker:
       torch_dtype: bfloat16
     offload:
       offload_params: true
-      offload_optimizer: false
+      offload_optimizer: true
 
   rollout:
     temperature: 1.0
@@ -55,8 +56,8 @@ worker:
     tensor_parallel_size: 2
     limit_images: 1
     env:
-      bsize: 16
-      n: 8
+      bsize: 8
+      n: 4
       avd_name: 'AndroidWorldAvd'
       android_avd_home: '/root/android/avd'
       emulator_path: '/root/android/emulator/emulator'
@@ -85,7 +86,7 @@ trainer:
   val_before_train: false
   val_only: false
   val_generations_to_log: 1
-  save_freq: 30
+  save_freq: 10
   remove_previous_ckpt: false
   remove_ckpt_after_load: false
   save_checkpoint_path: '/gy_1/share_302625455/user/yuchengshi/qwenvl_32b' #/apdcephfs_gy2/share_302625455/user/kaixinma/gui_output/qwenvl_verl_test_hd
